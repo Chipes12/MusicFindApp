@@ -1,3 +1,4 @@
+import 'package:MusicFindApp/here_you_go.dart';
 import 'package:flutter/material.dart';
 import 'escuchar.dart';
 
@@ -10,12 +11,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'MusicFindApp ',
-      theme: new ThemeData(
-        primarySwatch: Colors.purple,
-          scaffoldBackgroundColor: Color.fromARGB(96, 62, 62, 66),
-          textTheme: Theme.of(context).textTheme.apply(
-                bodyColor: Color.fromARGB(245, 245, 245, 255),
-              )),
+      theme: new ThemeData.dark(),
       initialRoute: "/escuchar",
       routes: {"/escuchar": (context) => Escuchar()},
     );
