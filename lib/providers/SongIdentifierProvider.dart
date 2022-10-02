@@ -74,12 +74,8 @@ class SongIdentifier with ChangeNotifier {
         var response = await apiRepo.postToAudd(audioBinary);
         if (response.statusCode == 200) {
           setSelectedSong(jsonDecode(response.body)["result"]);
-          print(_selectedSong);
           _found = true;
           notifyListeners();
-        } else {
-          notifyListeners();
-          return null;
         }
       });
     }
