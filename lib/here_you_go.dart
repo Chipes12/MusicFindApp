@@ -1,61 +1,147 @@
+import 'package:MusicFindApp/escuchar.dart';
+import 'package:MusicFindApp/providers/SongIdentifierProvider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class HereYouGo extends StatelessWidget {
-  //final dynamic cancion;
-  //final bool favorita;
   const HereYouGo({
     Key? key,
-    //required this.cancion,
-   // required this.favorita,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Color.fromARGB(96, 62, 62, 66),
-        title: Text("Here you go"),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () {},
+        appBar: AppBar(
+          backgroundColor: Color.fromARGB(96, 62, 62, 66),
+          title: Text("Here you go"),
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed: () {
+              context.read<SongIdentifier>().noSelectedSong();
+              context.read<SongIdentifier>().notFound();
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const Escuchar()),
+              );
+            },
+          ),
+          actions: <Widget>[
+            Padding(
+                padding: EdgeInsets.only(right: 20.0),
+                child: GestureDetector(
+                  onTap: () {
+                    if (context.read<SongIdentifier>().getSongsList.contains(
+                        context.read<SongIdentifier>().getSelectedSong)) {
+                          showDialog(
+                        context: context,
+                        builder: ((context) {
+                          return AlertDialog(
+                            title: Text("Eliminar de favoritos"),
+                            content: Text(
+                                "Quieres quitar esta canción de tus favoritos"),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text("Cancelar"),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  context.read<SongIdentifier>().removeSong(
+                          context.read<SongIdentifier>().getSelectedSong);
+                          Navigator.of(context).pop();
+                                },
+                                child: Text("Eliminar"),
+                              ),
+                            ],
+                          );
+                        }),
+                      );
+                    } else {
+                      context.read<SongIdentifier>().addSong(
+                          context.read<SongIdentifier>().getSelectedSong);
+                    }
+                  },
+                  child: Icon(Icons.favorite),
+                )),
+          ],
         ),
-        actions: <Widget>[
-          Padding(
-              padding: EdgeInsets.only(right: 20.0),
-              child: GestureDetector(
-                onTap: () {},
-                child: Icon(Icons.favorite),
-              )),
-        ],
-      ),
-      body: ListView(
-        children: [
-          Image.network("https://i.scdn.co/image/d3acaeb069f37d8e257221f7224c813c5fa6024e"),
-          SizedBox(height: 30),
-          Center(
-            child: Column(
-              children: [
-                Text("Titulo", style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),),
-                Text("Album", style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),),
-                Text("Artista", style: TextStyle(fontSize: 18, fontWeight: FontWeight.w400, color: Colors.grey[600]),),
-                Text("Fecha", style: TextStyle(fontSize: 18, fontWeight: FontWeight.w400, color: Colors.grey[600]),),
-                Divider(color: Colors.grey[900],),
-                Text("Abrir con:"),
-                Padding(
-                  padding: const EdgeInsets.only(top: 20),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      IconButton(onPressed: (){} , icon: Icon(Icons.podcasts)),
-                      
-                    ],
+        body: ListView(
+          children: [
+            Image.network(
+                "${context.read<SongIdentifier>().getSelectedSong["spotify"]["album"]["images"][0]["url"]}"),
+            SizedBox(height: 30),
+            Center(
+              child: Column(
+                children: [
+                  Text(
+                    "${context.read<SongIdentifier>().getSelectedSong["title"]}",
+                    style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
                   ),
-                )
-              ],
-            ),
-          )
-        ],
-      )
-    );
+                  Text(
+                    "${context.read<SongIdentifier>().getSelectedSong["apple_music"]["albumName"]}",
+                    style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    "${context.read<SongIdentifier>().getSelectedSong["artist"]}",
+                    style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w400,
+                        color: Colors.grey[600]),
+                  ),
+                  Text(
+                    "${context.read<SongIdentifier>().getSelectedSong["release_date"]}",
+                    style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w400,
+                        color: Colors.grey[600]),
+                  ),
+                  Divider(
+                    color: Colors.grey[900],
+                  ),
+                  Text("Abrir con:"),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 20),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        IconButton(
+                          onPressed: () {
+                            launchUrl(Uri.parse(
+                                "${context.read<SongIdentifier>().getSelectedSong["spotify"]["external_urls"]["spotify"]}"));
+                          },
+                          icon: FaIcon(FontAwesomeIcons.spotify),
+                          iconSize: 50,
+                          tooltip: "Ver en Spotify",
+                        ),
+                        IconButton(
+                            onPressed: () {
+                              launchUrl(
+                                  Uri.parse("${context.read<SongIdentifier>().getSelectedSong["song_link"]}"));
+                            },
+                            icon: FaIcon(FontAwesomeIcons.podcast),
+                            iconSize: 50,
+                            tooltip: "Ver en podcast",),
+                        IconButton(
+                          onPressed: () {
+                            launchUrl(Uri.parse(
+                                "${context.read<SongIdentifier>().getSelectedSong["apple_music"]["url"]}"));
+                          },
+                          icon: FaIcon(FontAwesomeIcons.apple),
+                          iconSize: 50,
+                          tooltip: "Ver en Apple music",
+                        )
+                      ],
+                    ),
+                  )
+                ],
+              ),
+            )
+          ],
+        ));
   }
 }

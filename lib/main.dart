@@ -1,8 +1,16 @@
-import 'package:MusicFindApp/here_you_go.dart';
-import 'package:flutter/material.dart';
-import 'escuchar.dart';
+import 'package:MusicFindApp/escuchar.dart';
 
-void main() => runApp(const MyApp());
+import 'providers/SongIdentifierProvider.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
+Future<void> main() async {
+  await dotenv.load();
+  runApp(ChangeNotifierProvider(
+        create: (context) => SongIdentifier(),
+        child: MyApp()));
+}
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -12,8 +20,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'MusicFindApp ',
       theme: new ThemeData.dark(),
-      initialRoute: "/escuchar",
-      routes: {"/escuchar": (context) => Escuchar()},
+      home: Escuchar(),
     );
   }
 }
