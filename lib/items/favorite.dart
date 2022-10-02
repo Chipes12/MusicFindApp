@@ -23,12 +23,16 @@ class FavoriteItem extends StatelessWidget {
           child: Stack(children: [
             Align(
               alignment: Alignment.bottomCenter,
-              child:
-                  Image.network(song["spotify"]["album"]["images"][1]["url"], fit: BoxFit.fill,),
+              child: Image.network(
+                song["spotify"]["album"]["images"][1]["url"],
+                height: 325,
+                width: 300,
+                alignment: Alignment.center,
+              ),
             ),
             Positioned(
               top: 5,
-              left: 5,
+              left: 10,
               child: IconButton(
                 onPressed: () {
                   if (context.read<SongIdentifier>().getSongsList.contains(
@@ -66,18 +70,17 @@ class FavoriteItem extends StatelessWidget {
                 icon: Icon(Icons.favorite),
               ),
             ),
-            Positioned.fill(
+            Positioned(
                 bottom: 0,
                 left: 0,
                 right: 0,
                 child: Container(
-                  height: 50,
+                  height: 100,
                   width: 300,
                   padding: EdgeInsets.all(4),
                   decoration: BoxDecoration(
-                    color: Color.fromRGBO(33, 149, 243, 0.452),
-                    borderRadius: BorderRadius.circular(12)
-                  ),
+                      color: Color.fromRGBO(33, 149, 243, 0.452),
+                      borderRadius: BorderRadius.circular(12)),
                   child: Column(children: [
                     Text(
                       "${song["title"]}",
